@@ -1,85 +1,99 @@
-# Moscow Zoo Totem Animal Quiz Bot
+# Totem Animal Quiz Bot
 
-This project is a Telegram bot that offers users an interactive quiz to discover their totem animal based on their preferences and personality. Built using python-telegram-bot, Redis, and threading, it also allows users to share results, contact support, and leave feedback.
+A Telegram quiz bot that asks users seven personality questions and matches them with an animal from the Moscow Zoo.
 
 ## Features
-- Interactive Quiz: Answer fun questions to find your totem animal.
-- Personalized Results: Each result comes with a detailed animal description and image.
-- Guardianship Program Info: Direct links to become an animal guardian.
-- Feedback and Support: Users can send feedback or contact support.
-- Retake Quiz: Allows users to retake the quiz anytime.
-- Sharing Options: Share your results on social media platforms.
 
-## Technologies Used
-- Python – The main programming language.
-- PyTelegramBotAPI – For interacting with Telegram’s Bot API.
-- Redis – Caching images to improve performance.
-- Threading – Manages inactive user data cleanup.
-- dotenv – Securely handles environment variables.
+- Interactive seven-question quiz
+- Typed quiz data built with Python dataclasses
+- Personalized animal result with an image and information link
+- Redis image cache with graceful fallback when Redis is unavailable
+- Support and feedback forwarding to the administrator
+- Social sharing buttons
+- Automatic cleanup of inactive in-memory quiz sessions
+- Unit tests for quiz logic and state storage
 
-## Setup and Installation
+## Technology stack
 
-1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/totemanimalquiz.git
-cd totemanimalquiz
+- Python 3.12+
+- PyTelegramBotAPI
+- Redis
+- Requests
+- python-dotenv
+- uv
+- pytest
+- Ruff
+
+## Project structure
+
+```text
+totem-animal-quiz-bot/
+├── src/totem_animal_bot/
+│   ├── cache.py
+│   ├── config.py
+│   ├── data.py
+│   ├── handlers.py
+│   ├── keyboards.py
+│   ├── main.py
+│   ├── models.py
+│   ├── quiz.py
+│   └── state.py
+├── tests/
+├── .env.example
+├── .gitignore
+├── pyproject.toml
+└── README.md
 ```
 
-2. Install Dependencies
+## Installation
+
+Install [uv](https://docs.astral.sh/uv/) and clone the repository.
+
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/mayldute/totemanimalquiz
+cd totem-animal-quiz-bot
+uv sync --extra dev
 ```
 
-3. Configure Environment Variables
-Create a `.env` file and set your token and admin ID:
+## Environment variables
+
+Copy the example file:
+
 ```bash
+cp .env.example .env
+```
+
+Fill in the values:
+
+```env
 TOKEN=your_telegram_bot_token
-ADMIN_ID=your_telegram_user_id
+ADMIN_ID=123456789
+BOT_USERNAME=YourBotUsername
+REDIS_URL=redis://localhost:6379/0
 ```
 
-4. Set Up Redis
+Do not add `.env` to Git.
 
-Make sure Redis is installed and running:
+## Redis
+
+Run Redis locally with Docker:
+
 ```bash
-sudo apt update
-sudo apt install redis-server
-sudo systemctl start redis
-sudo systemctl enable redis
+docker run --name totem-animal-redis -p 6379:6379 -d redis:7-alpine
 ```
 
-## How to Run the Bot
+The bot can still run when Redis is unavailable, but images will not be cached.
+
+## Run the bot
+
 ```bash
-python bot.py
+uv run totem-animal-bot
 ```
-The bot will start polling and be available on Telegram.
 
-## Usage Guide
+## Tests and code quality
 
-### Start the Quiz
-- Send `/start` to begin.
-- Follow on-screen questions.
-- Your totem animal result will be shown at the end.
-
-### Contact Support
-- Use the Contact Support button after receiving results to ask questions.
-
-### Leave Feedback
-- Share your thoughts using the Leave Feedback button.
-
-### Share Results
-- Share your quiz results directly on:
-    - Twitter
-    - VK
-    - Facebook
-    - Telegram
-
-## Admin Features
-- Receive user questions and feedback directly via Telegram.
-- Track user results for insights.
-
-## Error Handling
-- Redis connection issues
-- Image caching failures
-- Missing or corrupted user data
-
-All errors are logged and handled gracefully without affecting the user experience.
+```bash
+uv run pytest
+uv run ruff format .
+uv run ruff check .
+```
